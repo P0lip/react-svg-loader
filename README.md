@@ -1,32 +1,94 @@
 # react-svg-loader
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/boopathi/react-svg-loader.svg)](https://greenkeeper.io/)
+## Install
 
-[![Build Status](https://travis-ci.org/boopathi/react-svg-loader.svg?branch=master)](https://travis-ci.org/boopathi/react-svg-loader) [![npm version](https://badge.fury.io/js/react-svg-loader.svg)](https://badge.fury.io/js/react-svg-loader) [![Code Climate](https://codeclimate.com/github/boopathi/react-svg-loader/badges/gpa.svg)](https://codeclimate.com/github/boopathi/react-svg-loader) [![Test Coverage](https://codeclimate.com/github/boopathi/react-svg-loader/badges/coverage.svg)](https://codeclimate.com/github/boopathi/react-svg-loader/coverage)
+```sh
+npm i react-svg-loader --save-dev
+```
 
-## Packages
+or
 
-+ [babel-plugin-react-svg](/packages/babel-plugin-react-svg)
-+ [react-svg-core](/packages/react-svg-core)
-+ [react-svg-loader](/packages/react-svg-loader)
-+ [react-svg-loader-cli](/packages/react-svg-loader-cli)
-+ [rollup-plugin-react-svg](/packages/rollup-plugin-react-svg)
+```sh
+yarn add react-svg-loader --dev
+```
 
-## Versions
+## Usage
 
-### Current
+```js
+// without webpack loader config
+import Image1 from 'react-svg-loader!./image1.svg';
 
-VERSION: `2.x` (master)
+// or if you're passing all .svg files via react-svg-loader,
+import Image2 from './image1.svg';
 
-Refer [CHANGELOG](CHANGELOG.md)
+// and use it like any other React Component
+<Image1 width={50} height={50}/>
+<Image2 width={50} height={50}/>
+```
 
-### v1.x
+### Loader output
 
-[branch=v1](https://github.com/boopathi/react-svg-loader/tree/v1)
+By default the loader outputs ES2015 code (with JSX compiled to JavaScript using babel-preset-react). You can combine it with [babel-loader](https://github.com/babel/babel-loader) + [babel-preset-env](https://github.com/babel/babel-preset-env) to compile it down to your target.
 
-### v0.1.x
+```js
+// In your webpack config
+{
+  test: /\.svg$/,
+  use: [
+    {
+      loader: "babel-loader"
+    },
+    {
+      loader: "react-svg-loader",
+      options: {
+        jsx: true, // true outputs JSX tags
+        match: /\.jsx?/, // files we want to transform using react-svg-loader
+      }
+    }
+  ]
+}
+```
 
-[branch=v0.1](https://github.com/boopathi/react-svg-loader/tree/v0.1)
+### SVGO options
+
+```js
+{
+  test: /\.svg$/,
+  use: [
+    "babel-loader",
+    {
+      loader: "react-svg-loader",
+      options: {
+        svgo: {
+          plugins: [
+            { removeTitle: false }
+          ],
+          floatPrecision: 2
+        }
+      }
+    }
+  ]
+}
+```
+
+## Internals
+
+<p align="center">
+Input SVG
+</p>
+<p align="center">↓</p>
+<p align="center">
+SVG Optimize using <a href="https://github.com/svg/svgo">SVGO</a>
+</p>
+<p align="center">↓</p>
+<p align="center">
+Babel Transform with <code>preset=react</code> and <a href="https://github.com/boopathi/react-svg-loader/tree/master/packages/babel-plugin-react-svg"><code>plugin=svgToComponent</code></a>
+</p>
+
+## Assumptions and Other gotchas
+
++ Root element is always `<svg>`
++ SVG is optimized using SVGO
 
 ## LICENSE
 
